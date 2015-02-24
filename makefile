@@ -43,3 +43,4 @@ clean:
 	rm -rf deb
 	rm -rf toothless
 	rm -rf node
+	rm *.deb
