@@ -39,8 +39,6 @@ node:
 	tar -xf node-v0.12.0-linux-x64.tar.gz -C node --strip-components=1
 
 clean:
-	echo $(VERSION)
 	rm -rf deb
 	rm -rf toothless
 	rm -rf node
-	rm *.deb
