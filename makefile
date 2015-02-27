@@ -1,7 +1,12 @@
 
 VERSION:=$(shell cat VERSION)
+EDGE:=$(shell cat EDGE)
 
-deb: stage-deb
+deb:
+	make clean
+	make toothless
+	make node
+	make stage-deb
 	cd deb && \
 	fpm \
 		-s dir \
@@ -16,10 +21,32 @@ deb: stage-deb
 		--after-upgrade post-upgrade.sh \
 		--description "A service for launching native applications seamlessly from the browser." \
 		opt etc
-	cp deb/*.deb .
+	mv deb/*.deb .
 	make clean
 
-stage-deb: clean toothless node
+edge:
+	make clean
+	make toothless-edge
+	make node
+	make stage-deb
+	cd deb && \
+	fpm \
+		-s dir \
+		-t deb \
+		-n toothless-edge \
+		-v $(EDGE) \
+		-d paprefs \
+		-d lxc-docker-1.5.0 \
+		--before-install pre-install.sh \
+		--after-install post-install.sh \
+		--before-upgrade pre-upgrade.sh \
+		--after-upgrade post-upgrade.sh \
+		--description "A service for launching native applications seamlessly from the browser." \
+		opt etc
+	mv deb/*.deb .
+	make clean
+
+stage-deb:
 	mkdir -p deb/opt/toothless
 	mkdir -p deb/etc/init
 	cp -r toothless/src/* deb/opt/toothless
@@ -33,6 +60,9 @@ stage-deb: clean toothless node
 
 toothless:
 	git clone git@github.com:wwwtyro/toothless.git
+
+toothless-edge:
+	git clone git@github.com:wwwtyro/toothless.git && cd toothless && git checkout develop
 
 node: 
 	mkdir node
